@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpHelper {
-    private static Map<String, String> headers;
+    private static Map<String, String> headers = new HashMap<String, String>();
 
-    public static Map<String, String> setHeaders(){
+    public static Map<String, String> setDefaultHeaders(){
         headers.put("Cache-Control", "no-cache");
         headers.put("User-Agent:", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36");
         headers.put("Accept-Encoding", "gzip, deflate, sdch");
@@ -23,10 +23,17 @@ public class HttpHelper {
         return headers;
     }
 
+    /**
+     * @param url
+     * @param params
+     * @param expectedStatusCode
+     * @return http response from get request
+     */
+
     public static HttpResponse sendGet(String url, Map<String, Object> params, int expectedStatusCode){
         HttpResponse<JsonNode> response = null;
         String builtUrl = null;
-        setHeaders();
+        setDefaultHeaders();
 //            StringBuilder sb = new StringBuilder(params.size()*5);
 //            sb.append(url).append("?");
 //            for (String key:params.keySet()){
@@ -38,7 +45,7 @@ public class HttpHelper {
 
         if (!(params.isEmpty()) || (params != null)) {
             try {
-                response = Unirest.get(url).headers(setHeaders()).queryString(params).asJson();
+                response = Unirest.get(url).headers(setDefaultHeaders()).queryString(params).asJson();
             } catch (UnirestException e) {
                 e.printStackTrace();
                 builtUrl = Unirest.get(url).headers(headers).queryString(params).getUrl().toString();
@@ -71,5 +78,55 @@ public class HttpHelper {
         return sendGetReturnContent(url, new HashMap<String, Object>(), expectedStatusCode);
     }
 
+    /**
+     * @param url
+     * @param params
+     * @param body
+     * @param expectedStatusCode
+     * @return http response from post request
+     */
 
+    public static HttpResponse sendPost(String url, Map<String, Object> params, String body, int expectedStatusCode){
+        HttpResponse<JsonNode> response = null;
+        String builtUrl = null;
+        setDefaultHeaders();
+
+        if (!(params.isEmpty()) || (params != null)) {
+            try {
+                response = Unirest.post(url).headers(setDefaultHeaders()).queryString(params).body(body).asJson();
+            } catch (UnirestException e) {
+                e.printStackTrace();
+                builtUrl = Unirest.post(url).headers(headers).queryString(params).body(body).toString();
+                Assert.fail("Unable to send get request: " + builtUrl);
+            }
+        }
+
+        Assert.assertEquals(response.getStatus(), expectedStatusCode, "Response code from " + builtUrl + " is not equal to expected" + expectedStatusCode);
+        return response;
+    }
+
+    public static String sendPostReturnContent(String url, Map<String, Object> params, String body, int expectedStatusCode){
+        HttpResponse response = sendPost(url, params, body, expectedStatusCode);
+        BufferedReader reader;
+        StringBuilder result = null;
+        System.out.println("\n" + response.getBody().toString() + "\n");
+        try {
+            reader = new BufferedReader(new InputStreamReader(response.getRawBody()));
+            String line;
+            while ((line = reader.readLine()) != null){
+                result.append(line);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return result.toString();
+    }
+
+    public static String sendPostReturnContent(String url, Map<String, Object> params, int expectedStatusCode) {
+        return sendPostReturnContent(url, params, new String(), expectedStatusCode);
+    }
+
+    public static String sendPostReturnContent(String url, int expectedStatusCode) {
+        return sendPostReturnContent(url, new HashMap<String, Object>(), new String(), expectedStatusCode);
+    }
 }

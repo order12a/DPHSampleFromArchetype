@@ -42,4 +42,8 @@ public class TestNgTestBase {
   public void tearDown() {
     WebDriverFactory.dismissAll();
   }
+
+  public void initAllHelpaers(WebDriver driver){
+
+  }
 }

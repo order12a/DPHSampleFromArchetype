@@ -11,12 +11,22 @@ import java.util.List;
  */
 public class JsonHelper {
 
+    /**
+     * @param json
+     * @param jsonPath
+     * @return String value
+     */
     public static String getString(String json, String jsonPath){
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
         String value = JsonPath.read(document, jsonPath);
         return value;
     }
 
+    /**
+     * @param json
+     * @param jsonPath
+     * @return list of String values
+     */
     public static List<String> getList(String json, String jsonPath){
         Configuration conf = Configuration.defaultConfiguration();
         Configuration confList = conf.addOptions(Option.ALWAYS_RETURN_LIST);
