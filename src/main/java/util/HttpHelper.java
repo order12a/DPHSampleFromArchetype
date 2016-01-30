@@ -81,22 +81,40 @@ public class HttpHelper {
     /**
      * @param url
      * @param params
-     * @param body
      * @param expectedStatusCode
      * @return http response from post request
      */
 
-    public static HttpResponse sendPost(String url, Map<String, Object> params, String body, int expectedStatusCode){
+    public static HttpResponse sendPostWithParams(String url, Map<String, Object> params, int expectedStatusCode){
         HttpResponse<JsonNode> response = null;
         String builtUrl = null;
         setDefaultHeaders();
 
         if (!(params.isEmpty()) || (params != null)) {
             try {
-                response = Unirest.post(url).headers(setDefaultHeaders()).queryString(params).body(body).asJson();
+                response = Unirest.post(url).headers(setDefaultHeaders()).queryString(params).asJson();
             } catch (UnirestException e) {
                 e.printStackTrace();
-                builtUrl = Unirest.post(url).headers(headers).queryString(params).body(body).toString();
+                builtUrl = Unirest.post(url).headers(headers).queryString(params).toString();
+                Assert.fail("Unable to send get request: " + builtUrl);
+            }
+        }
+
+        Assert.assertEquals(response.getStatus(), expectedStatusCode, "Response code from " + builtUrl + " is not equal to expected" + expectedStatusCode);
+        return response;
+    }
+
+    public static HttpResponse sendPostWithBody(String url, String body, int expectedStatusCode){
+        HttpResponse<JsonNode> response = null;
+        String builtUrl = null;
+        setDefaultHeaders();
+
+        if (!(body.isEmpty()) || (body != null)) {
+            try {
+                response = Unirest.post(url).headers(setDefaultHeaders()).body(body).asJson();
+            } catch (UnirestException e) {
+                e.printStackTrace();
+                builtUrl = Unirest.post(url).headers(headers).body(body).toString();
                 Assert.fail("Unable to send get request: " + builtUrl);
             }
         }
@@ -106,7 +124,12 @@ public class HttpHelper {
     }
 
     public static String sendPostReturnContent(String url, Map<String, Object> params, String body, int expectedStatusCode){
-        HttpResponse response = sendPost(url, params, body, expectedStatusCode);
+        HttpResponse response = null;
+        if(body.isEmpty()){
+           response = sendPostWithParams(url, params, expectedStatusCode);
+        }else {
+            response = sendPostWithBody(url, body, expectedStatusCode);
+        }
         BufferedReader reader;
         StringBuilder result = null;
         System.out.println("\n" + response.getBody().toString() + "\n");

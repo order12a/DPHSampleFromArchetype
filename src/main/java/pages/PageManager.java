@@ -1,6 +1,4 @@
 package pages;
-
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 
@@ -18,7 +16,6 @@ public class PageManager {
 
     public PageManager(WebDriver driver) {
         this.driver = driver;
-
         anyPage = PageFactory.initElements(driver, AnyPage.class);
         cartPage = PageFactory.initElements(driver, CartPage.class);
         homePage = PageFactory.initElements(driver, HomePage.class);
@@ -28,4 +25,13 @@ public class PageManager {
         searchPage = PageFactory.initElements(driver, SearchPage.class);
         staticLoginPage = PageFactory.initElements(driver, StaticLoginPage.class);
     }
+
+
+	public <T extends Page> void initPage(T page){
+		PageFactory.initElements(driver, page);
+	}
+	
+	public WebDriver getWebdriver() {
+		return driver;
+	}
 }
