@@ -68,19 +68,19 @@
       <version>1.2</version>
     </dependency>
     <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi</artifactId>
+      <version>2.71</version>
+    </dependency>
+    <dependency>
       <groupId>com.relevantcodes</groupId>
       <artifactId>extentreports</artifactId>
       <version>2.10</version>
     </dependency>
     <dependency>
-      <groupId>ru.yandex.qatools.properties</groupId>
+      <groupId>ru.qatools.commons</groupId>
       <artifactId>properties</artifactId>
-      <version>1.6</version>
-    </dependency>
-    <dependency>
-      <groupId>ru.yandex.qatools.properties</groupId>
-      <artifactId>properties-loader</artifactId>
-      <version>1.6</version>
+      <version>2.0.RC5</version>
     </dependency>
   </dependencies>
   <build>

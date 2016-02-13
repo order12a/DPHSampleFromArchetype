@@ -7,7 +7,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import ru.stqa.selenium.factory.WebDriverFactory;
 import ru.stqa.selenium.factory.WebDriverFactoryMode;
+import steps.ApplicationFacade;
 import util.PropertyLoader;
+import util.config.EnvironmentConfig;
 
 import java.io.IOException;
 
@@ -19,13 +21,18 @@ public class TestNgTestBase {
   protected static String gridHubUrl;
   protected static String baseUrl;
   protected static Capabilities capabilities;
+  protected ApplicationFacade app;
+  protected static String browser;
 
   protected WebDriver driver;
 
   @BeforeSuite
   public void initTestSuite() throws IOException {
-    baseUrl = PropertyLoader.loadProperty("site.url");
+//    baseUrl = PropertyLoader.loadProperty("site.url");
+    EnvironmentConfig config = ru.qatools.properties.PropertyLoader.newInstance().populate(EnvironmentConfig.class);
     gridHubUrl = PropertyLoader.loadProperty("grid.url");
+    baseUrl = config.getBaseUrl();
+    browser = config.getBrowser();
     if ("".equals(gridHubUrl)) {
       gridHubUrl = null;
     }
@@ -36,6 +43,7 @@ public class TestNgTestBase {
   @BeforeMethod
   public void initWebDriver() {
     driver = WebDriverFactory.getDriver(gridHubUrl, capabilities);
+    app = new ApplicationFacade(driver, baseUrl);
   }
 
   @AfterSuite(alwaysRun = true)
@@ -43,7 +51,4 @@ public class TestNgTestBase {
     WebDriverFactory.dismissAll();
   }
 
-  public void initAllHelpaers(WebDriver driver){
-
-  }
 }
